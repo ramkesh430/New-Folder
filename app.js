@@ -1,3 +1,4 @@
+require('dotenv').config()  // This line loads environment variables from a .env file into process.env
 const express = require('express')
 const connecttoDatabase = require('./database')
 
@@ -17,7 +18,7 @@ app.get('/about',(req,res) => {
   })
 })
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
   console.log('Nodejs project has started')
 })
 
