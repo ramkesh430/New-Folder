@@ -27,13 +27,9 @@ app.get('/about',(req,res) => {
 })
 
 app.post('/blog',upload.single('image'),async (req,res) => {
-  console.log(req.body)
-  // const description = req.body.description
-  // const title = req.body.title
-  // const subtitle = req.body.subtitle
-  // const image = req.body.image
-  // Alternatively, you can use destructuring to extract the properties
-  const { title, subtitle, description, image } = req.body
+  const { title,subtitle,description,image } = req.body
+  const filename = req.file.filename
+
   if(!title || !subtitle || !description || !image) {
     return res.status(400).json({
       message: 'Please provide all required fields: title, subtitle, description, image'
@@ -43,7 +39,7 @@ app.post('/blog',upload.single('image'),async (req,res) => {
     title : title,
     subtitle: subtitle,
     description: description,
-    image: image
+    image: filename
   })
 
 
@@ -51,6 +47,34 @@ app.post('/blog',upload.single('image'),async (req,res) => {
     message: 'Blog api hit successfully!'
   })
 })
+
+app.get('/blog', async (req, res) =>{
+  const blogs = await Blog.find() // returns array of all blogs
+  res.status(200).json({
+    message: 'Blogs fetched successfully!',
+    data: blogs
+  })
+})
+
+app.get('/blog/:id', async (req, res) => {
+  const id = req.params.id // Get the blog ID from the request parameters
+  blog = await Blog.findById(id) // returns a single blog by id
+  res.status(200).json({
+    message: 'Blog fetched successfully!',
+    data: blog
+  })
+})
+
+app.delete('/blog/:id', async (req, res) => {
+  const id = req.params.id // Get the blog ID from the request parameters
+  blog = await Blog.findByIdAndDelete(id) // Delete the blog by id
+  res.status(200).json({
+    message: 'Blog deleted successfully!',
+    data: blog
+  })
+})
+
+app.use(express.static('./storage')) // Serve static files from the 'storage' directory
 
 app.listen(process.env.PORT, () => {
   console.log('Nodejs project has started')
